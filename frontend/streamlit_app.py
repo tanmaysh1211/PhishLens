@@ -37,10 +37,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # API coordinates
-if os.path.exists("/.dockerenv"):
-    API_BASE = "http://backend:8000/api/v1"
-else:
-    API_BASE = "http://localhost:8000/api/v1"
+# if os.path.exists("/.dockerenv"):
+#     API_BASE = "http://backend:8000/api/v1"
+# else:
+#     API_BASE = "http://localhost:8000/api/v1"
+
+# API coordinates
+API_BASE = os.getenv(
+    "API_BASE_URL",
+    "http://localhost:8000/api/v1"
+)
 
 # Initialize Session State
 if "api_url" not in st.session_state:
