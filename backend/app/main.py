@@ -1,0 +1,59 @@
+import logging
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from backend.app.core.config import settings
+from backend.app.api.endpoints.analysis import router as analysis_router
+
+# Setup Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger("phishing_platform")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup actions
+    logger.info("Initializing PhishLens backend...")
+    yield
+    # Shutdown actions
+    logger.info("Shutting down PhishLens backend...")
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="PhishLens: Explainable Multimodal Phishing Intelligence and Threat Auditing System using DistilBERT",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Set up CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Register routes
+app.include_router(analysis_router, prefix=f"{settings.API_V1_STR}/analyze", tags=["analysis"])
+
+@app.get("/", tags=["health"])
+def root_route():
+    return {
+        "message": f"Welcome to the {settings.PROJECT_NAME}",
+        "docs_url": "/docs",
+        "status": "active"
+    }
+
+# Health check route for Streamlit connection checks
+@app.get(f"{settings.API_V1_STR}/health", tags=["health"])
+def health_check():
+    return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
