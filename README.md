@@ -6,28 +6,6 @@ PhishLens is an AI-powered, stateless phishing analysis platform that combines c
 
 ---
 
-## 🏗️ System Architecture
-
-```mermaid
-graph TD
-    User([User / Analyst]) -->|Interact| Frontend[Streamlit Dashboard]
-    Frontend -->|HTTP Requests| Backend[FastAPI backend]
-
-    subgraph Core Engines
-        Backend -->|Extract Text| OCR[OCR Service - Tesseract]
-        Backend -->|Run Heuristics| Rules[Heuristic Rules Engine]
-        Backend -->|Scan Domains| URLs[URL Typosquatting Analyzer]
-        Backend -->|AI Classification| ML[Hybrid ML Engine - DistilBERT & SVM]
-    end
-
-    Backend -->|Compute composite grade| Scorer[Dynamic Threat Scorer]
-    Scorer -->|Compile brief| LLM[GenAI Analyst - Ollama / OpenAI]
-
-    LLM -->|Generate explainable security brief| User
-```
-
----
-
 ## 📁 Repository Structure
 
 ```text
